@@ -343,3 +343,24 @@ if palavras:
     print(
         f"Tempo do Table Scan: "
         f"{tempo_scan:.8f} segundos")
+
+    print("\nCOMPARAÇÃO")
+
+    print(f"Tempo - Índice Hash: {tempo_busca:.8f} segundos")
+    print(f"Tempo - Table Scan: {tempo_scan:.8f} segundos")
+
+    print(f"Páginas lidas - Índice Hash: {custo_paginas}")
+    print(f"Páginas lidas - Table Scan: {paginas_lidas_scan}")
+
+    if tempo_scan > 0:
+        diferenca_tempo = ((tempo_scan - tempo_busca) / tempo_scan) *100
+    else: 
+        diferenca_tempo = 0
+
+    if paginas_lidas_scan > 0:
+        diferenca_paginas = ((paginas_lidas_scan - custo_paginas) / paginas_lidas_scan) *100
+    else:
+        diferenca_paginas = 0
+
+    print(f"Diferença percentual de tempo: {diferenca_tempo:.2f}%")
+    print(f"Diferença percentual de páginas lidas: {diferenca_paginas:.2f}%")
