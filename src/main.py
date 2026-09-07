@@ -56,6 +56,14 @@ def criar_buckets(numero_buckets):
 
     return buckets
 
+def func_hash(chave, numero_buckets):
+    valor_hash = 0
+
+    for carac in chave:
+        valor_hash = (valor_hash * 31 + ord(carac)) % numero_buckets
+
+    return valor_hash
+
 def mostrar_paginas(paginas):
     print("\nRESULTADO")
 
@@ -102,3 +110,12 @@ if palavras:
     print(f"FR - Capacidade do bucket: {FR}")
     print(f"NB - Número de buckets: {NB}")
     print(f"Buckets criados: {len(buckets)}")
+
+    print("\nFUNC HASH")
+
+    palavra_teste = "computer"
+
+    bucket_teste = func_hash(palavra_teste, NB)
+
+    print(f"Palavra: {palavra_teste}")
+    print(f"Bucket calculado: {bucket_teste}")
