@@ -186,6 +186,40 @@ def buscar_indice(
         tempo_busca
     )
 
+def table_scan(chave, paginas):
+    inicio = time.perf_counter()
+
+    paginas_lidas = 0
+    pagina_encontrada = None
+
+    for numero_pagina, pagina in enumerate(paginas):
+        paginas_lidas += 1
+
+        for palavra in pagina:
+            if palavra == chave:
+                pagina_encontrada = numero_pagina
+
+                fim = time.perf_counter()
+
+                tempo_busca = fim - inicio
+
+                return(
+                    True,
+                    pagina_encontrada,
+                    paginas_lidas,
+                    tempo_busca
+                )
+
+    fim = time.perf_counter()
+
+    tempo_busca = fim - inicio
+
+    return (
+        False,
+        None,
+        paginas_lidas,
+        tempo_busca
+    )
 
 def mostrar_paginas(paginas):
     print("\nRESULTADO")
@@ -289,3 +323,23 @@ if palavras:
 
     print(f"Tempo da busca pelo índice: " 
           f"{tempo_busca:.8f} segundos")
+
+    print("\nTABLE SCAN")
+
+    (encontrado_scan, pagina_scan, paginas_lidas_scan, tempo_scan) = table_scan(chave_busca, paginas)
+
+    if encontrado_scan:
+        print("Chave encontrada.")
+
+        print(f"Página: {pagina_scan}")
+
+    else:
+        print("Chave não encontrada.")
+
+    print(
+        f"Páginas lidas: "
+        f"{paginas_lidas_scan}")
+
+    print(
+        f"Tempo do Table Scan: "
+        f"{tempo_scan:.8f} segundos")
