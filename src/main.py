@@ -1,4 +1,5 @@
 import math
+import time
 
 def carregar_palavras(caminho_arquivo):
     palavras = []
@@ -44,7 +45,7 @@ def dividir_em_paginas(palavras, tamanho_pagina):
     return paginas
 
 def calcular_buckets(numero_registros, capacidade_bucket):
-    numero_buckets = math.floor(numero_registros / capacidade_bucket) +1
+    numero_buckets = math.floor(numero_registros / capacidade_bucket) + 1
 
     return numero_buckets
 
@@ -56,6 +57,14 @@ def criar_buckets(numero_buckets):
 
     return buckets
 
+def criar_overflows(numero_buckets):
+    overflows = []
+
+    for _ in range(numero_buckets):
+        overflows.append([])
+
+    return overflows
+
 def func_hash(chave, numero_buckets):
     valor_hash = 0
 
@@ -63,6 +72,34 @@ def func_hash(chave, numero_buckets):
         valor_hash = (valor_hash * 31 + ord(carac)) % numero_buckets
 
     return valor_hash
+
+def construir_indice(paginas, buckets, overflows, numero_buckets, capacidade_bucket):
+    inicio = time.perf_counter()
+
+    total_colisoes = 0
+    buckets_com_overflow = set()
+
+    for numero_pagina, pagina in enumerate(paginas):
+        for palavra in pagina:
+            endereco_bucket = func_hash(palavra, numero_buckets)
+
+            registro_indice = (palavra, numero_pagina)
+
+            if len(buckets[endereco_bucket]) < capacidade_bucket:
+                buckets[endereco_bucket].append(registro_indice)
+
+            else:
+                total_colisoes += 1
+
+                overflows[endereco_bucket].append(registro_indice)
+
+                buckets_com_overflow.add(endereco_bucket)
+
+    fim = time.perf_counter()
+
+    tempo_construcao = fim - inicio
+
+    return tempo_construcao, total_colisoes, len(buckets_com_overflow)
 
 def mostrar_paginas(paginas):
     print("\nRESULTADO")
@@ -98,11 +135,13 @@ if palavras:
 
     mostrar_paginas(paginas)
 
-    NR = len (palavras)
+    NR = len(palavras)
 
     NB = calcular_buckets(NR, FR)
 
     buckets = criar_buckets(NB)
+
+    overflows = criar_overflows(NB)
 
     print("\nÍNDICE HASH")
 
@@ -110,6 +149,28 @@ if palavras:
     print(f"FR - Capacidade do bucket: {FR}")
     print(f"NB - Número de buckets: {NB}")
     print(f"Buckets criados: {len(buckets)}")
+
+    tempo_construcao, total_colisoes, total_buckets_overflow = construir_indice(
+        paginas,
+        buckets,
+        overflows,
+        NB,
+        FR
+    )
+
+    taxa_colisoes = (total_colisoes / NR) * 100
+
+    taxa_overflow = (total_buckets_overflow / NB) * 100
+
+    print(f"Tempo de construção do índice: {tempo_construcao:.6f} segundos")
+
+    print("\nESTATÍSTICAS")
+
+    print(f"Total de colisões: {total_colisoes}")
+    print(f"Taxa de colisões: {taxa_colisoes:.2f}%")
+
+    print(f"Buckets com overflow: {total_buckets_overflow}")
+    print(f"Taxa de overflow: {taxa_overflow:.2f}%")
 
     print("\nFUNC HASH")
 
