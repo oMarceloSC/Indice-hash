@@ -1,2 +1,1 @@
-# Indice-hash
-.
+# https://github.com/oMarceloSC/Indice-hash
